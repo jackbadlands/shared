@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if test -n "$2"
+then
+  o="$2"
+else
+  o="$1.sh"
+fi
+echo "#!/bin/sh">"$o"
+echo -e "echo \"\\">>"$o"
+base32 "$1" | sed 's/$/\\/'>>"$o"
+echo "\" | base32 -d">>"$o"
+chmod +x "$o"
+

@@ -1,0 +1,26 @@
+#!/usr/bin/lua
+
+if not arg[1] then
+	print(string.format("usage %s <pattern> [file]", arg[0]))
+	os.exit(3)
+end
+
+local in_fd
+if arg[2] then
+	in_fd = io.open(arg[2], "rb")
+	if not in_fd then
+		print("Cannot open file for reading")
+		os.exit(4)
+	end
+else
+	in_fd = io.stdin
+end
+
+
+for line in in_fd:lines() do
+	local out = { string.match(line, arg[1]) }
+	if out[1] then
+		print(unpack(out))
+	end
+end
+

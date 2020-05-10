@@ -1,0 +1,31 @@
+#!/bin/bash
+
+IFS='
+'
+
+get_name() {
+	NAME=`echo $@ | awk -F . '{for(i=1;i<NF;i++){printf("%s.",$(i));}printf("\n");}'`
+	echo ${NAME:0:-1}
+}
+
+for i in `ls`
+do
+	if test -d "$i"
+	then
+		echo "$i"
+		pushd "$i" > /dev/null
+
+		for CUEFILE in `find . -name "*.cue"`
+		do
+			FLACFILE=`get_name $CUEFILE`.flac
+
+			if test -f $FLACFILE && test -f $CUEFILE
+			then
+				cat $CUEFILE | iconv -f windows-1251 -t utf-8 | splitflac | bash
+				rm -v $FLACFILE $CUEFILE
+			fi
+		done
+
+		popd > /dev/null
+	fi
+done

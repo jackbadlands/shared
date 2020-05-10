@@ -1,0 +1,57 @@
+#!/usr/bin/env lua
+fname = arg[1]
+if arg[1] == nil then print("usage: <list.m3u> [out.m3u]") os.exit(0) end
+m3u_header = "#EXTM3U"
+fd = io.open(fname)
+if fd == nil then
+	print("Cannot open file:", fname)
+	os.exit(1)
+end
+
+-- read file
+fdata = fd:read("*a")
+fd:close()
+
+-- parse list
+records = {}
+math.randomseed(os.time())
+for i, v in string.gmatch(fdata, "(#EXTINF.-)\n(.-)\n") do
+	table.insert(records, {
+		header = i,
+		path = v,
+		order = math.random()
+	})
+	-- debug
+	--print(
+	--	records[#records].header,
+	--	records[#records].path,
+	--	records[#records].order
+	--)
+end
+
+-- shuffle list
+table.sort(records, function(a, b) if a.order < b.order then
+	return true else return false end end)
+
+-- write list
+outfd = nil
+if arg[2] ~= nil then
+	outfd = io.open(arg[2], "w")
+	if outfd == nil then
+		print("cannot open output file:", arg[2])
+		os.exit(1)
+	end
+else
+	outfd = io.stdout
+end
+
+outfd:write(m3u_header, "\n")
+for i, v in ipairs(records) do
+	fd = io.open(v.path)
+	if fd ~= nil then
+		fd:close()
+		outfd:write(v.header, "\n")
+		outfd:write(v.path, "\n")
+	end
+end
+outfd:close()

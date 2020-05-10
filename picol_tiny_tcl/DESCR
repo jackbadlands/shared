@@ -1,0 +1,4 @@
+tiny TCL interpreter (~500 lines of code).
+
+source: http://antirez.com/picol/picol.c.txt 
+

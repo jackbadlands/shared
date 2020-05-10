@@ -1,0 +1,17 @@
+#!/bin/bash
+
+S="$HOME/.runbashscript.sh"
+
+vim $S
+printf "should I run BASH script? [y/N]: "
+read -n1 R
+echo ""
+if test "$R" = "y" || \
+	test "$R" = "Y" 
+then
+	bash $S
+	exit $?
+else
+	exit 0
+fi
+

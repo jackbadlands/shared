@@ -1,0 +1,33 @@
+#!/usr/bin/lua
+
+local in_name
+local mode = "name" -- name, ext, no_dot_ext
+
+for i, v in ipairs(arg) do
+	if v == "-e" then
+		mode = "ext"
+	elseif v == "-E" then
+		mode = "no_dot_ext"
+	elseif v == "-n" then
+		mode = "name" -- default
+	else
+		in_name = v
+	end
+end
+
+if not in_name then
+	print("usage:\n\t%s [-e] [-E] [-n] <name>", arg[0])
+end
+
+local name_ext = string.match(in_name, ".+(%.%S+)$") or ""
+local name_without_ext = string.sub(in_name, 1, -(string.len(name_ext) + 1))
+local name_ext_no_dot = string.sub(name_ext, 2)
+
+if mode == "name" then
+	print(name_without_ext)
+elseif mode == "ext" then
+	print(name_ext)
+elseif mode == "no_dot_ext" then
+	print(name_ext_no_dot)
+end
+

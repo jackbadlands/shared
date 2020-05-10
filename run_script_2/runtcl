@@ -1,0 +1,17 @@
+#!/bin/bash
+
+S="$HOME/.runtclscript.tcl"
+
+vim $S
+printf "Should I run TCL script? [Y/n]: "
+read R
+if test "$R" = "y" || \
+	test "$R" = "Y"  || \
+	test "$R" = "" 
+then
+	tclsh $S
+	exit $?
+else
+	exit 0
+fi
+

@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# TOOLS #################
+
+function terminate() {
+	echo "$1"
+	exit 1
+}
+
+# SCRIPT DEPS ###########
+
+if ! which lua
+then
+	terminate "Lua interpreter is not installed"
+fi
+if ! which gen-slack-desc
+then
+	terminate "gen-slack-desc is needed to generate \
+		slack-desc for this package"
+fi
+
+# CONFIG ################
+
+arch="$(uname -m)"
+PKGNAME=runscripts
+DIRS=( \
+	/usr/bin \
+)
+
+# FILL LOCAL DIR ########
+mkdir -p iii/install || terminate
+for i in ${DIRS[@]}
+do
+	mkdir -p iii${i}
+done
+
+# slack-desc
+gen-slack-desc $PKGNAME DESCR > iii/install/slack-desc || terminate
+
+# copy files
+cp runlua iii/usr/bin/runlua || terminate
+cp runtcl iii/usr/bin/runtcl || terminate
+cp runbash iii/usr/bin/runbash || terminate
+
+# set perms
+chmod -R 755 iii || terminate
+chmod 755 iii/usr/bin/runlua || terminate
+chmod 755 iii/usr/bin/runtcl || terminate
+chmod 755 iii/usr/bin/runbash || terminate
+
+# make pkg
+pushd iii
+pkgname="${PKGNAME}-1.0-${arch}-1.tgz"
+rm "../$pkgname"
+makepkg -l y -c n "../$pkgname"
+popd
+rm -r iii
+

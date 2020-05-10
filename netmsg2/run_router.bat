@@ -1,0 +1,3 @@
+lua router.lua
+pause
+

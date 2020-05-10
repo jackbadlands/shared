@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# TODO rm vbox, nvidia
+
+mods=ipv6:cfg80211:rfkill:pci_stub:fuse:hid_generic:uas:usbhid:hid:usb_storage:nvidia:kvm_amd:kvm:i2c_dev:irqbypass:ppdev:drm:evdev:serio_raw:agpgart:k10temp:hwmon:ohci_pci:snd_hda_codec_via:snd_hda_codec_generic:8250_fintek:ehci_pci:i2c_nforce2:parport_pc:shpchp:parport:ohci_hcd:forcedeth:i2c_core:ehci_hcd:snd_hda_intel:snd_hda_codec:snd_hda_core:snd_hwdep:snd_pcm:snd_timer:snd:button:fjes:acpi_cpufreq:soundcore:tpm_tis:tpm:processor:loop
+
+rootuuid=70583f9e-2937-4487-8ac8-14f51644b73f
+
+kernelver=4.4.14
+
+mkinitrd -c -k $kernelver -m $mods -u -w 10 -f ext2 -r UUID=$rootuuid
+

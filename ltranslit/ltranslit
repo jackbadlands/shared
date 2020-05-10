@@ -1,0 +1,95 @@
+#!/usr/bin/env lua
+
+local in_fd, out_fd = nil, nil
+
+if arg[1] and arg[2] then
+	in_fd = assert(io.open(arg[1], "rb"))
+	out_fd = assert(io.open(arg[2], "wb"))
+elseif arg[1] and not arg[2] then
+	in_fd = assert(io.open(arg[1], "rb"))
+	out_fd = io.stdout
+elseif not arg[1] and not arg[2] then
+	in_fd = io.stdin
+	out_fd = io.stdout
+end
+
+local rus_letters = {
+
+	["а"] = "a",
+	["б"] = "b",
+	["в"] = "v",
+	["г"] = "g",
+	["д"] = "d",
+	["е"] = "e",
+	["ё"] = "jo",
+	["ж"] = "*",
+	["з"] = "z",
+	["и"] = "i",
+	["й"] = "j",
+	["к"] = "k",
+	["л"] = "l",
+	["м"] = "m",
+	["н"] = "n",
+	["о"] = "o",
+	["п"] = "p",
+	["р"] = "r",
+	["с"] = "s",
+	["т"] = "t",
+	["у"] = "y",
+	["ф"] = "f",
+	["х"] = "h",
+	["ц"] = "c",
+	["ч"] = "4",
+	["ш"] = "w",
+	["щ"] = "w4",
+	["ъ"] = "j",
+	["ы"] = "u",
+	["ь"] = "'",
+	["э"] = "e",
+	["ю"] = "IO",
+	["я"] = "9",
+
+	["А"] = "A",
+	["Б"] = "B",
+	["В"] = "V",
+	["Г"] = "G",
+	["Д"] = "D",
+	["Е"] = "E",
+	["Ё"] = "JO",
+	["Ж"] = "*",
+	["З"] = "Z",
+	["И"] = "I",
+	["Й"] = "J",
+	["К"] = "K",
+	["Л"] = "L",
+	["М"] = "M",
+	["Н"] = "N",
+	["О"] = "O",
+	["П"] = "P",
+	["Р"] = "R",
+	["С"] = "S",
+	["Т"] = "T",
+	["У"] = "Y",
+	["Ф"] = "F",
+	["Х"] = "H",
+	["Ц"] = "C",
+	["Ч"] = "4",
+	["Ш"] = "W",
+	["Щ"] = "W4",
+	["Ъ"] = "J",
+	["Ы"] = "U",
+	["Ь"] = "'",
+	["Э"] = "E",
+	["Ю"] = "IO",
+	["Я"] = "9",
+}
+
+for in_line in in_fd:lines() do
+	local buffer = in_line
+	for sym, repl in pairs(rus_letters) do
+		buffer = string.gsub(buffer, sym, repl)
+	end
+	out_line = buffer
+	out_fd:write(out_line.."\n")
+end
+

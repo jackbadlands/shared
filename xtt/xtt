@@ -1,0 +1,4 @@
+#!/bin/bash
+
+printf "\033]2;xterm: ${1}\007"
+

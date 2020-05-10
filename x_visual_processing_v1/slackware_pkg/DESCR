@@ -1,0 +1,7 @@
+X visual processing (capscreen, findpats)
+
+capscreen - captures x11 desktop to PPm file
+findpats - finds subimages on image
+findpat - finds subimage on image
+findpattm - finds subimage masked by tolerance_map_image on image
+

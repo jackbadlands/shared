@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Скрипт выключения монитора
+
+xset dpms force off

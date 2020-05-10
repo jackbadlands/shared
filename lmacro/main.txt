@@ -1,0 +1,6 @@
+__DATE__, __LUAVER__
+@include defs.txt
+
+main, main, title? title!
+@undef main
+main

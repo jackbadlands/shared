@@ -1,0 +1,62 @@
+#!/usr/bin/awk -f
+
+# Script for parsing the "cue" audio file
+# and writing a bash script for splitting
+# single flac file to separated flac tracks.
+#
+# The script created by this program uses
+# external programs: bash, flac.
+
+BEGIN {
+	COUNT=0;
+}
+
+{
+	if ($1 == "FILE") {
+		split($0,A,"\"");
+		FILE = A[2];
+	}
+
+	if ($1 == "TRACK") {
+		TRACK = $2;
+	}
+
+	if ($1 == "TITLE") {
+		split($0,A,"\"");
+		TITLE = A[2];
+	}
+
+	if ($1 == "PERFORMER") {
+		split($0,A,"\"");
+		PERFORMER = A[2];	
+	}
+
+	if (($1 == "INDEX") && ($2 == "01")) {
+
+		sub("\r", "", $3);
+		split($3, A, ":");
+
+		COUNT = COUNT + 1;
+
+		TIME[COUNT] = A[1] ":" A[2] "." A[3];
+		NAME[COUNT] = TRACK ". " PERFORMER " - " TITLE;
+	}
+
+#	split($0, A, "/");
+#	for (i in A) {
+#		print LINE," -> ",A[i];
+#	}
+}
+
+END {
+	print "#!/bin/bash"
+	for (I = 1; I <= COUNT; I = I + 1) {
+		if (I == 1) {
+			print "flac \"" FILE "\" -o \"" NAME[I] ".flac\" --until=" TIME[I + 1] "";
+		} else if (I == COUNT) {
+			print "flac \"" FILE "\" -o \"" NAME[I] ".flac\" --skip=" TIME[I] "";
+		} else {
+			print "flac \"" FILE "\" -o \"" NAME[I] ".flac\" --skip=" TIME[I] " --until=" TIME[I + 1] "";
+		}
+	}
+}

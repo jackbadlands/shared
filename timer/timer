@@ -1,0 +1,70 @@
+#!/usr/bin/env lua
+
+local sleep = require "socket".sleep
+
+local tsecs = 0
+for i, tstr in ipairs(arg) do
+	if string.match(tstr, "^%d+$") and tonumber(tstr) then
+		tsecs = tsecs + tonumber(tstr)
+	elseif string.match(tstr, "^%d+s$") then
+		tsecs = tsecs + assert(tonumber(string.match(tstr, "^(%d+)s$")))
+	elseif string.match(tstr, "^%d+m$") then
+		tsecs = tsecs + assert(tonumber(string.match(tstr, "^(%d+)m$"))) * 60
+	elseif string.match(tstr, "^%d+h$") then
+		tsecs = tsecs + assert(tonumber(string.match(tstr, "^(%d+)h$")))
+				* 60 * 60
+	elseif string.match(tstr, "^%d+d$") then
+		tsecs = tsecs + assert(tonumber(string.match(tstr, "^(%d+)d$")))
+				* 60 * 60 * 24
+	else
+		error("unknown format: \""..tstr.."\"")
+	end
+end
+
+local curtime = os.time()
+local starttime = curtime
+local alarmtime = starttime + tsecs
+
+local starttimestr = os.date("%H:%M:%S", starttime)
+local alarmtimestr = os.date("%H:%M:%S", alarmtime)
+
+local curtime = os.time()
+while curtime < alarmtime do
+	local difftime = curtime - starttime
+	local timeleft = tsecs - difftime
+	--[[ progress in percents
+	local progress = difftime / tsecs
+	local progresspercent = progress * 100
+	local progressstr = string.format(" %.1f%% ", progresspercent)
+	io.stdout:write("\r", starttimestr, progressstr, alarmtimestr)
+	io.stdout:flush()
+	]]
+	local leftsecs = timeleft % 60
+	timeleft = math.floor(timeleft / 60)
+	local leftmins = timeleft % 60
+	timeleft = math.floor(timeleft / 60)
+	local lefthours = timeleft % 24
+	timeleft = math.floor(timeleft / 24)
+	local leftdays = timeleft
+
+	if leftdays > 0 then
+		io.stdout:write(string.format("\r%3dd %02d:%02d:%02d    ", leftdays,
+				lefthours, leftmins, leftsecs))
+	else
+		io.stdout:write(string.format("\r%02d:%02d:%02d    ", lefthours, leftmins,
+				leftsecs))
+	end
+	io.stdout:flush()
+
+	sleep(1)
+	curtime = os.time()
+end
+
+-- alarm
+for i = 1, 90 do
+	if os.execute("mplayer /usr/share/sounds/kapman/levelup.ogg") ~= 0 then
+		os.exit(0)
+	end
+	sleep(0.01)
+end
+

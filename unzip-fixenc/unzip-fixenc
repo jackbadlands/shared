@@ -1,0 +1,115 @@
+#!/usr/bin/lua
+
+verbose = true
+
+local function do_nothing()
+end
+
+-- Settings
+local tmplist = "/tmp/unzip_fixenc.tmplist"
+local tmpbuggy = "/tmp/unzip_fixenc.tmpbuggy"
+local tmpfixed = "/tmp/unzip_fixenc.tmpfixed"
+--
+local aname
+if arg[1] == "--check" then
+	aname = assert(arg[2], "No archive file specified")
+else
+	aname = assert(arg[1], "No archive file specified")
+end
+
+-- Settings check
+do_nothing()
+
+-- Listing files in archive
+os.execute("7z l -slt ".. aname .. " > " .. tmplist)
+local fd = assert(io.open(tmplist))
+local list = fd:read("*a")
+fd:close()
+os.remove(tmplist)
+
+-- Get filenames from archive
+local buggynames = {}
+local isfolder = {}
+for block in string.gmatch(list, ".-\n\n") do
+	local rpath, rfolder
+	for record, value in string.gmatch(block, "([^\n]-) = ([^\n]-)\n") do
+		if record == "Path" then
+			if value ~= aname then
+				rpath = value
+			end
+		elseif record == "Folder" then
+			if value == "+" then
+				rfolder = true
+			else
+				rfolder = false
+			end
+		end
+
+	end
+	if rpath ~= nil and rfolder ~= nil then
+		table.insert(buggynames, rpath)
+		isfolder[rpath] = rfolder
+	end
+end
+
+-- Fix buggy filenames
+fd = assert(io.open(tmpbuggy, "w"))
+fd:write(table.concat(buggynames, "\n"))
+fd:close()
+os.execute("cat "
+	.. tmpbuggy
+	.. " | iconv -t iso8859-1 | iconv -f cp866 > "
+	.. tmpfixed)
+
+-- Read fixed filenames
+local fixednames = {}
+fd = assert(io.open(tmpfixed, "r"))
+for ln in fd:lines() do
+	table.insert(fixednames, ln)
+end
+fd:close()
+
+-- Make subfolders
+if verbose then
+	print("Making subdirs")
+end
+outdir = aname .. ".fixednames"
+for i, v in pairs(buggynames) do
+	local buggyname = v
+	local fixedname = fixednames[i]
+	local outname = outdir .. "/" .. fixedname
+
+	-- Make subdirs
+	if isfolder[buggyname] then
+		if verbose then
+			print("Making subdir:", outname)
+		end
+		os.execute("mkdir -p '" .. outname .. "'")
+	end
+end
+
+-- Extract files
+if verbose then
+	print("Extracting files")
+end
+outdir = aname .. ".fixednames"
+for i, v in pairs(buggynames) do
+	local buggyname = v
+	local fixedname = fixednames[i]
+	local outname = outdir .. "/" .. fixedname
+
+	-- Extract file
+	if not isfolder[buggyname] then
+		if verbose then
+			print("Extracting:", outname)
+		end
+		os.execute("7z x"
+			.. " "  .. aname
+			.. " '" .. buggyname .. "'"
+			.. " -so > "
+			.. " '" .. outname .. "'"
+			.. " 2>/dev/null"
+			)
+	end
+
+end

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+IFS='
+'
+
+for i in `ls *.png || exit 2`
+do
+  bname=`extname $i || exit 2`
+  png=$i
+  ppm=$bname.ppm
+  convert $png $ppm || exit 2
+  rm $png || exit 2
+done
+

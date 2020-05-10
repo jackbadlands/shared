@@ -1,0 +1,6 @@
+#!/bin/bash
+
+gcc xlib_desktop_capture_to_stdout.c -O2  $(pkg-config --cflags --libs x11) -lnetpbm -o xcapout &&
+gcc -o glviewer sdl_viewer.c pmalloc.c -lSDL -lGL -lGLU -lm &&
+./xcapout | ./glviewer
+

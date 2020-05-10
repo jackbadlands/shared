@@ -1,0 +1,3 @@
+@define main Lua Version is "__LUAVER__"
+
+@define title Hello!
