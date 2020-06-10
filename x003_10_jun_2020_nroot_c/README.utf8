@@ -1,0 +1,9 @@
+program searches n-root for target number value.
+only positive numbers.
+
+USAGE:
+I want to find x, where x^3==8.
+then I will run command
+  ./nroot 3 8
+result will be printed into console's stdout.
+
