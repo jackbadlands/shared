@@ -1,0 +1,13 @@
+current "suncalc.lua" version is:
+2.0
+
+============
+
+history of changes:
+
+2.0:
+moon positions are implemented too.
+
+1.3:
+suport of sun positions.
+moon positions is not implemented.

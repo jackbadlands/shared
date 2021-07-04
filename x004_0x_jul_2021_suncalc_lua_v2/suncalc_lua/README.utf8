@@ -1,0 +1,18 @@
+sun calc lua v2.0
+
+EN:
+sun's and moon's position calculation
+adopted from JS source
+--
+original source author: Vladimir Agafonkin
+original source autor's habrahabr post: http://habrahabr.ru/post/127101/
+original source on github: http://github.com/mourner/suncalc
+
+RU:
+вычисление позиции солнца и луны на Lua
+адаптировано из JS исходника
+--
+автор оригинальных сорцов: Владимир Агафонкин
+пост автора на хабре: http://habrahabr.ru/post/127101/
+оригинальные исходники github: http://github.com/mourner/suncalc
+
